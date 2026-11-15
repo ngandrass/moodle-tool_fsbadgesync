@@ -22,7 +22,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_fsbadgesync;
+namespace tool_fsbadgesync\local;
 
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
@@ -62,7 +62,7 @@ class manager {
      */
     public function handle_course_completed(\core\event\course_completed $event): void {
         // Handle the course completed event.
-        mtrace('TODO');
+        debugging('TODO');
     }
 
     /**
@@ -75,16 +75,16 @@ class manager {
         // Only handle events if the plugin is enabled.
         $manager = new self();
         if (!$manager->is_enabled()) {
-            mtrace('Plugin is disabled. Skipping event handling.');
+            debugging('Plugin is disabled. Skipping event handling.');
             return;
         }
 
         // Dispatch event.
         if ($event instanceof \core\event\course_completed) {
-            mtrace('Event received: ' . $event->get_name() . ' for user ID: ' . $event->relateduserid);
+            debugging('Event received: ' . $event->get_name() . ' for user ID: ' . $event->relateduserid);
             $manager->handle_course_completed($event);
         } else {
-            mtrace('Unhandled event: ' . $event->get_name());
+            debugging('Unhandled event: ' . $event->get_name());
         }
     }
 }
