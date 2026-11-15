@@ -24,6 +24,8 @@
 
 namespace tool_fsbadgesync\local;
 
+use tool_fsbadgesync\task\award_fs_badge;
+
 // phpcs:ignore
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
@@ -52,6 +54,41 @@ class manager {
      */
     public function is_enabled(): bool {
         return !empty($this->config->enable);
+    }
+
+    /**
+     * Checks if the foodsharing API connection is configured.
+     *
+     * @return bool True if both API URL and API token are set, false otherwise.
+     */
+    public function is_api_configured(): bool {
+        return !empty($this->config->apiurl) && !empty($this->config->apitoken);
+    }
+
+    /**
+     * Awards a badge (achievement) to a user on the foodsharing platform.
+     *
+     * @param int $fsbadgeid ID of the badge to award
+     * @param int $fsid ID of the user on the foodsharing platform
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException On HTTP errors or connection problems
+     */
+    public function award_fs_badge(int $fsbadgeid, int $fsid): void {
+        // Only issue badges if the foodsharing API is configured.
+        if (!$this->is_api_configured()) {
+            debugging('Foodsharing API not configured. Skipping.');
+            return;
+        }
+
+        // Call the foodsharing API. Throws on error.
+        $url = rtrim($this->config->apiurl, '/') . "/api/moodle/achievements/{$fsbadgeid}/users/{$fsid}";
+        \core\di::get(\core\http_client::class)->post($url, [
+            'headers' => [
+                'X-Moodle-Token' => $this->config->apitoken,
+                'Accept' => 'application/json',
+            ],
+            'timeout' => 30,
+        ]);
     }
 
     /**
@@ -84,6 +121,7 @@ class manager {
      * @param \core\event\course_completed $event The course completed event object
      * @return void
      * @throws \dml_exception
+     * @throws \coding_exception
      */
     public function handle_course_completed(\core\event\course_completed $event): void {
         // Only issue badges for courses that have a valid FS badge associated with it.
@@ -100,8 +138,18 @@ class manager {
             return;
         }
 
-        // TODO: Implement the API call.
-        debugging("TODO: Issue fsbadgeid {$fsbadgeid} to fsid {$fsid}");
+        // Defer the API call to an adhoc task to not block course completion and to allow retries.
+        $task = new award_fs_badge();
+        $task->set_custom_data([
+            'fsbadgeid' => $fsbadgeid,
+            'fsid' => $fsid,
+            'courseid' => $event->courseid,
+            'userid' => $event->relateduserid,
+        ]);
+        $task->set_attempts_available(4); // Initial attempt plus 3 retries.
+        \core\task\manager::queue_adhoc_task($task, true);
+
+        debugging("Queued awarding of fsbadgeid {$fsbadgeid} to fsid {$fsid}");
     }
 
     /**

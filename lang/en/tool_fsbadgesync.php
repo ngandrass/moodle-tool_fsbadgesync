@@ -28,6 +28,10 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Foodsharing Badge Sync';
+$string['setting_apitoken'] = 'API token';
+$string['setting_apitoken_desc'] = 'Service token used to authenticate against the foodsharing API. It must match the <code>MOODLE_SERVICE_TOKEN</code> configured on the foodsharing platform.';
+$string['setting_apiurl'] = 'API base URL';
+$string['setting_apiurl_desc'] = 'Base URL of the foodsharing platform (e.g., <code>https://foodsharing.de</code>). The API path is added automatically.';
 $string['setting_coursefield'] = 'Course field: FS Badge ID';
 $string['setting_coursefield_desc'] = 'Shortname of the custom course field that holds the ID of the foodsharing badge to award upon course completion. Only courses with a positive integer value in this field are processed.';
 $string['setting_enable'] = 'Enable Badge Sync';
@@ -35,3 +39,4 @@ $string['setting_enable_desc'] = 'If enabled, the plugin will automatically issu
 $string['setting_plugin_desc'] = 'This plugin automatically issues badges to foodsharing users when they complete certain courses. It is designed to work with the Foodsharing platform and its badge system.';
 $string['setting_userfield'] = 'User profile field: FS-ID';
 $string['setting_userfield_desc'] = 'Shortname of the custom user profile field that holds the ID of the user on the foodsharing platform (FS-ID). Only users with a positive integer value in this field are processed.';
+$string['task_award_fs_badge'] = 'Award foodsharing badge';

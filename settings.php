@@ -65,6 +65,23 @@ if ($hassiteconfig) {
             'fsid',
             PARAM_ALPHANUMEXT
         ));
+
+        // Base URL of the foodsharing platform.
+        $settings->add(new admin_setting_configtext(
+            'tool_fsbadgesync/apiurl',
+            get_string('setting_apiurl', 'tool_fsbadgesync'),
+            get_string('setting_apiurl_desc', 'tool_fsbadgesync'),
+            'https://foodsharing.de',
+            PARAM_URL
+        ));
+
+        // Service token used to authenticate against the foodsharing API.
+        $settings->add(new admin_setting_configpasswordunmask(
+            'tool_fsbadgesync/apitoken',
+            get_string('setting_apitoken', 'tool_fsbadgesync'),
+            get_string('setting_apitoken_desc', 'tool_fsbadgesync'),
+            ''
+        ));
     }
 
     $ADMIN->add('tools', $settings);
