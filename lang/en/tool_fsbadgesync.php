@@ -28,6 +28,9 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Foodsharing Badge Sync';
+$string['privacy:metadata:foodsharing'] = 'When a user completes a course that is linked to a foodsharing badge, the plugin sends data to the foodsharing platform to award the badge to the user.';
+$string['privacy:metadata:foodsharing:fsbadgeid'] = 'The ID of the foodsharing badge to award.';
+$string['privacy:metadata:foodsharing:fsid'] = 'The ID of the user on the foodsharing platform (FS-ID).';
 $string['setting_apitoken'] = 'API token';
 $string['setting_apitoken_desc'] = 'Service token used to authenticate against the foodsharing API. It must match the <code>MOODLE_SERVICE_TOKEN</code> configured on the foodsharing platform.';
 $string['setting_apiurl'] = 'API base URL';
