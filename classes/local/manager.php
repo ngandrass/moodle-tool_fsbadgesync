@@ -72,12 +72,11 @@ class manager {
      * @param int $fsid ID of the user on the foodsharing platform
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException On HTTP errors or connection problems
+     * @throws \moodle_exception If the foodsharing API is not configured
      */
     public function award_fs_badge(int $fsbadgeid, int $fsid): void {
-        // Only issue badges if the foodsharing API is configured.
         if (!$this->is_api_configured()) {
-            debugging('Foodsharing API not configured. Skipping.');
-            return;
+            throw new \moodle_exception('error_api_not_configured', 'tool_fsbadgesync');
         }
 
         // Call the foodsharing API. Throws on error.
@@ -124,6 +123,12 @@ class manager {
      * @throws \coding_exception
      */
     public function handle_course_completed(\core\event\course_completed $event): void {
+        // Only queue badge awards if the foodsharing API is configured.
+        if (!$this->is_api_configured()) {
+            debugging('Foodsharing API not configured. Skipping.');
+            return;
+        }
+
         // Only issue badges for courses that have a valid FS badge associated with it.
         $fsbadgeid = $this->get_fsbadgeid($event->courseid);
         if ($fsbadgeid === null) {

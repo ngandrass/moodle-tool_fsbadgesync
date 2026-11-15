@@ -27,6 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
+$string['error_api_not_configured'] = 'The foodsharing API URL or token is not configured.';
 $string['pluginname'] = 'Foodsharing Badge Sync';
 $string['privacy:metadata:foodsharing'] = 'When a user completes a course that is linked to a foodsharing badge, the plugin sends data to the foodsharing platform to award the badge to the user.';
 $string['privacy:metadata:foodsharing:fsbadgeid'] = 'The ID of the foodsharing badge to award.';
