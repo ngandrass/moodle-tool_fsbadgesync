@@ -28,6 +28,10 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $string['pluginname'] = 'Foodsharing Badge Sync';
+$string['setting_coursefield'] = 'Course field: FS Badge ID';
+$string['setting_coursefield_desc'] = 'Shortname of the custom course field that holds the ID of the foodsharing badge to award upon course completion. Only courses with a positive integer value in this field are processed.';
 $string['setting_enable'] = 'Enable Badge Sync';
 $string['setting_enable_desc'] = 'If enabled, the plugin will automatically issue badges to applicable users when completing courses. If disabled, no new badges will be issued.';
 $string['setting_plugin_desc'] = 'This plugin automatically issues badges to foodsharing users when they complete certain courses. It is designed to work with the Foodsharing platform and its badge system.';
+$string['setting_userfield'] = 'User profile field: FS-ID';
+$string['setting_userfield_desc'] = 'Shortname of the custom user profile field that holds the ID of the user on the foodsharing platform (FS-ID). Only users with a positive integer value in this field are processed.';

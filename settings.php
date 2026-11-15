@@ -47,6 +47,24 @@ if ($hassiteconfig) {
             get_string('setting_enable_desc', 'tool_fsbadgesync'),
             '1'
         ));
+
+        // Course custom field holding the ID of the foodsharing badge to award.
+        $settings->add(new admin_setting_configtext(
+            'tool_fsbadgesync/coursefield',
+            get_string('setting_coursefield', 'tool_fsbadgesync'),
+            get_string('setting_coursefield_desc', 'tool_fsbadgesync'),
+            'fsbadgeid',
+            PARAM_ALPHANUMEXT
+        ));
+
+        // User profile field holding the FS-ID of the user.
+        $settings->add(new admin_setting_configtext(
+            'tool_fsbadgesync/userfield',
+            get_string('setting_userfield', 'tool_fsbadgesync'),
+            get_string('setting_userfield_desc', 'tool_fsbadgesync'),
+            'fsid',
+            PARAM_ALPHANUMEXT
+        ));
     }
 
     $ADMIN->add('tools', $settings);
