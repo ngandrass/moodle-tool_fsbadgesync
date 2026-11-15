@@ -26,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
 
 $plugin->component = 'tool_fsbadgesync';
-$plugin->release = '0.0.1';
-$plugin->version = 2026111502;
+$plugin->release = '0.1.0';
+$plugin->version = 2026111503;
 $plugin->requires = 2024100700;
 $plugin->supported = [405, 503]; // X meta-supported-moodle{4.5 - 5.3} meta-supported-php{8.1 - 8.4}.
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->maturity = MATURITY_BETA;
