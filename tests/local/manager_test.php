@@ -310,7 +310,7 @@ final class manager_test extends \advanced_testcase {
 
         $this->assertCount(1, $tasks, 'Exactly one task should be queued');
         $task = reset($tasks);
-        $this->assertSame(4, (int) $task->get_attempts_available(), 'Task should allow 3 retries');
+        $this->assertSame(12, (int) $task->get_attempts_available(), 'Task should allow 11 retries');
         $this->assertEquals((object) [
             'fsbadgeid' => 13,
             'fsid' => 37,

@@ -17,8 +17,8 @@ If any of these conditions is not met, the event is skipped silently. Courses an
 by filling in the respective fields.
 
 The actual API call is executed asynchronously via the ad-hoc task `award_fs_badge`, so course completion is never
-blocked. Failed API calls are retried automatically (3 retries after a failed attempt). This way short outages do not
-cause loss of badge awards.
+blocked. Failed API calls are retried automatically (up to 11 retries with exponential backoff, covering roughly 34
+hours). This way outages of up to a day do not cause loss of badge awards.
 
 
 ## Configuration

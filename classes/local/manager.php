@@ -151,7 +151,7 @@ class manager {
             'courseid' => $event->courseid,
             'userid' => $event->relateduserid,
         ]);
-        $task->set_attempts_available(4); // Initial attempt plus 3 retries.
+        $task->set_attempts_available(12); // Initial attempt plus 11 retries (exponential backoff: last retry after ~34h).
         \core\task\manager::queue_adhoc_task($task, true);
 
         debugging("Queued awarding of fsbadgeid {$fsbadgeid} to fsid {$fsid}");
