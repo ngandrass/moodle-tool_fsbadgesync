@@ -24,6 +24,7 @@
 
 namespace tool_fsbadgesync\task;
 
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
@@ -106,16 +107,75 @@ final class award_fs_badge_test extends \advanced_testcase {
     /**
      * Tests that API failures are rethrown to trigger a task retry
      *
-     * @covers \tool_fsbadgesync\task\award_fs_badge
-     * @covers \tool_fsbadgesync\local\manager
+     * @covers       \tool_fsbadgesync\task\award_fs_badge
+     * @covers       \tool_fsbadgesync\local\manager
+     * @dataProvider retryable_status_provider
      *
+     * @param int $status HTTP status code returned by the API
      * @return void
      */
-    public function test_execute_failure_is_rethrown(): void {
-        $this->mock->append(new Response(500));
+    public function test_execute_failure_is_rethrown(int $status): void {
+        $this->mock->append(new Response($status));
+        $task = $this->create_task();
+        $task->set_attempts_available(12);
 
-        $this->expectException(GuzzleException::class);
-        $this->create_task()->execute();
+        try {
+            $task->execute();
+            $this->fail('Exception expected');
+        } catch (GuzzleException $e) {
+            $this->assertSame(12, $task->get_attempts_available(), 'Remaining attempts must not be altered');
+        }
+    }
+
+    /**
+     * Data provider for test_execute_failure_is_rethrown()
+     *
+     * @return array[] Test cases of [HTTP status]
+     */
+    public static function retryable_status_provider(): array {
+        return [
+            'Not found' => [404],
+            'Internal server error' => [500],
+            'Service unavailable' => [503],
+        ];
+    }
+
+    /**
+     * Tests that authentication / authorization failures prevent further task retries
+     *
+     * @covers       \tool_fsbadgesync\task\award_fs_badge
+     * @covers       \tool_fsbadgesync\local\manager
+     * @dataProvider auth_failure_status_provider
+     *
+     * @param int $status HTTP status code returned by the API
+     * @return void
+     * @throws GuzzleException
+     */
+    public function test_execute_auth_failure_disables_retries(int $status): void {
+        $this->mock->append(new Response($status));
+        $task = $this->create_task();
+        $task->set_attempts_available(12);
+
+        try {
+            $task->execute();
+            $this->fail('Exception expected');
+        } catch (ClientException $e) {
+            $this->assertSame($status, $e->getResponse()->getStatusCode());
+            $this->assertSame(1, $task->get_attempts_available(), 'Only the current attempt should remain');
+        }
+        $this->expectOutputRegex("/HTTP {$status}. Not retrying/");
+    }
+
+    /**
+     * Data provider for test_execute_auth_failure_disables_retries()
+     *
+     * @return array[] Test cases of [HTTP status]
+     */
+    public static function auth_failure_status_provider(): array {
+        return [
+            'Unauthorized (Invalid API token)' => [401],
+            'Forbidden (Invalid Badge ID)' => [403],
+        ];
     }
 
     /**

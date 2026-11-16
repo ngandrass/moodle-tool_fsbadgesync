@@ -34,7 +34,9 @@ defined('MOODLE_INTERNAL') || die(); // @codeCoverageIgnore
  * Awards a badge to a user on the foodsharing platform via its API.
  *
  * Expected custom data: fsbadgeid, fsid, courseid, userid. API failures are
- * rethrown to make use of the adhoc task retry mechanism.
+ * rethrown to make use of the adhoc task retry mechanism. Authentication and
+ * authorization errors (HTTP 401 / 403) are not retried since they will not
+ * be resolved by sole retrying.
  */
 class award_fs_badge extends \core\task\adhoc_task {
     /**
@@ -59,7 +61,17 @@ class award_fs_badge extends \core\task\adhoc_task {
         $fsid = (int) $data->fsid;
 
         $manager = new manager();
-        $manager->award_fs_badge($fsbadgeid, $fsid);
+        try {
+            $manager->award_fs_badge($fsbadgeid, $fsid);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // Authentication / authorization errors will not resolve by retrying. Fail permanently.
+            $status = $e->getResponse()->getStatusCode();
+            if (in_array($status, [401, 403], true)) {
+                $this->set_attempts_available(1); // Core decrements this to 0 on failure, preventing further retries.
+                mtrace("Foodsharing API rejected the request with HTTP {$status}. Not retrying.");
+            }
+            throw $e;
+        }
 
         mtrace("Awarded badge {$fsbadgeid} to FS-ID {$fsid}.");
     }

@@ -18,7 +18,8 @@ by filling in the respective fields.
 
 The actual API call is executed asynchronously via the ad-hoc task `award_fs_badge`, so course completion is never
 blocked. Failed API calls are retried automatically (up to 11 retries with exponential backoff, covering roughly 34
-hours). This way outages of up to a day do not cause loss of badge awards.
+hours). This way outages of up to a day do not cause loss of badge awards. Requests that fail due to invalid credentials
+or invalid badge IDs are not retried, as they will never succeed from retrying alone.
 
 
 ## Configuration
